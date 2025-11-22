@@ -46,8 +46,10 @@ export default function Dashboard() {
       await deleteLink(code);
       setLinks(prev => prev.filter(l => l.code !== code));
       setToastMsg(`Deleted ${code}`);
+      setTimeout(() => setToastMsg(null), 2000);
     } catch (e) {
       setToastMsg('Delete failed');
+      setTimeout(() => setToastMsg(null), 2000);
     }
   }
 
