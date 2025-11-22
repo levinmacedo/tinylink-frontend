@@ -31,3 +31,6 @@ Notes:
 	•	Requires backend to be running and accessible
 	•	Uses toast notifications for success and errors
 	•	Mobile-friendly with collapsible rows
+
+
+tinylink-frontend v1.0 finalcommit
