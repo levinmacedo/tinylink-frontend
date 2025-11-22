@@ -8,6 +8,7 @@ export default function MyApp({ Component, pageProps }) {
     <>
       <Head>
         <title>TinyLink</title>
+        <meta name="description" content="TinyLink - fast URL shortener" />
       </Head>
 
       <div className="min-h-screen flex flex-col">

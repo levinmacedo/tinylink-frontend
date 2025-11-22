@@ -11,7 +11,7 @@ export default function LinkForm({ onCreate, onNotify }) {
     if (typeof onNotify === 'function') {
       onNotify(msg, opts)
     } else {
-      alert(msg)
+      console.warn(msg)
     }
   }
 
@@ -34,24 +34,18 @@ export default function LinkForm({ onCreate, onNotify }) {
       setCode('')
       return created
     } catch (err) {
-      // Map backend errors to friendly messages
       const backendMsg = err?.response?.data?.error
       let userMsg = backendMsg || err?.message || 'Could not create the link. Please try again.'
 
-      // map specific backend text to your friendly phrasing
       if (backendMsg === 'Code already in use' || /already in use/i.test(backendMsg || '')) {
-        userMsg = 'Code already taken - try a different one.'
+        userMsg = 'Code already taken. Try another one.'
       } else if (/Invalid code format/i.test(backendMsg || '')) {
-        userMsg = 'Invalid custom code. Use 6-8 letters or numbers.'
+        userMsg = 'Invalid custom code. Use 6–8 letters or numbers.'
       } else if (/url/i.test(backendMsg || '') && /invalid/i.test(backendMsg || '')) {
         userMsg = 'Invalid URL. URLs must begin with http:// or https://'
       }
-
-      // show a persistent-ish validation toast so user can read it (longer duration)
       const duration = err?.response?.status === 409 ? 4000 : 3500
       notify(userMsg, { duration })
-
-      // DO NOT rethrow — prevents unhandled rejection bubbling and ensures toast shows
       return null
     } finally {
       setLoading(false)

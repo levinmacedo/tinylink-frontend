@@ -16,12 +16,24 @@ export default function CodePage() {
 
   useEffect(() => {
     if (!code) return
+
+    let mounted = true   // <-- guard
+
     setLoading(true)
     setErr(null)
+
     getLink(code)
-      .then(data => setLink(data))
-      .catch(e => setErr(e?.response?.data?.error || 'Not found'))
-      .finally(() => setLoading(false))
+      .then(data => {
+        if (mounted) setLink(data)
+      })
+      .catch(e => {
+        if (mounted) setErr(e?.response?.data?.error || 'Not found')
+      })
+      .finally(() => {
+        if (mounted) setLoading(false)
+      })
+
+    return () => { mounted = false }   // <-- cleanup
   }, [code])
 
   return (

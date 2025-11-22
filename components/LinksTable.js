@@ -30,9 +30,9 @@ export default function LinksTable({ links = [], onDelete, onNotify, requestDele
   async function copyToClipboard(text) {
     try {
       await navigator.clipboard.writeText(text)
-      if (onNotify) onNotify('Success: “Short URL copied', { duration: 1200 })
+      if (onNotify) onNotify('Short URL copied.', { duration: 2200 })
     } catch {
-      if (onNotify) onNotify('Error: “Copy failed. Try again', { duration: 1200 })
+      if (onNotify) onNotify('Copy failed. Please try again.', { duration: 3200 })
     }
   }
 
@@ -77,109 +77,111 @@ export default function LinksTable({ links = [], onDelete, onNotify, requestDele
 
   return (
     <div className="space-y-4">
-      <div className="hidden md:block card overflow-hidden">
-        <table className="table w-full table-fixed">
-          <thead>
-            <tr>
-              <th className="w-28 text-left">
-                <div role="button" tabIndex={0} onClick={() => toggleSort('code')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('code') }} className={`cursor-pointer select-none ${sortBy.key === 'code' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Code">
-                  <div className="leading-tight">Code <SortIndicator keyName="code" /></div>
-                </div>
-              </th>
+      <div className="hidden md:block card">
+        <div className="table-responsive links-table-scroll">
+          <table className="table w-full table-fixed">
+            <thead>
+              <tr>
+                <th className="w-28 text-left">
+                  <div role="button" tabIndex={0} onClick={() => toggleSort('code')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('code') }} className={`cursor-pointer select-none ${sortBy.key === 'code' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Code">
+                    <div className="leading-tight">Code <SortIndicator keyName="code" /></div>
+                  </div>
+                </th>
 
-              <th className="w-56 text-left">
-                <div role="button" tabIndex={0} onClick={() => toggleSort('shortUrl')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('shortUrl') }} className={`cursor-pointer select-none ${sortBy.key === 'shortUrl' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Short URL">
-                  <div className="leading-tight">Short URL <SortIndicator keyName="shortUrl" /></div>
-                </div>
-              </th>
+                <th className="w-56 text-left">
+                  <div role="button" tabIndex={0} onClick={() => toggleSort('shortUrl')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('shortUrl') }} className={`cursor-pointer select-none ${sortBy.key === 'shortUrl' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Short URL">
+                    <div className="leading-tight">Short URL <SortIndicator keyName="shortUrl" /></div>
+                  </div>
+                </th>
 
-              <th className="w-auto text-left">
-                <div role="button" tabIndex={0} onClick={() => toggleSort('url')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('url') }} className={`cursor-pointer select-none ${sortBy.key === 'url' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Target URL">
-                  <div className="leading-tight">Target URL <SortIndicator keyName="url" /></div>
-                </div>
-              </th>
+                <th className="w-auto text-left">
+                  <div role="button" tabIndex={0} onClick={() => toggleSort('url')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('url') }} className={`cursor-pointer select-none ${sortBy.key === 'url' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Target URL">
+                    <div className="leading-tight">Target URL <SortIndicator keyName="url" /></div>
+                  </div>
+                </th>
 
-              <th className="w-28 text-center">
-                <div role="button" tabIndex={0} onClick={() => toggleSort('clicks')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('clicks') }} className={`cursor-pointer select-none ${sortBy.key === 'clicks' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Clicks">
-                  <div className="leading-tight">Clicks <SortIndicator keyName="clicks" /></div>
-                </div>
-              </th>
+                <th className="w-28 text-center">
+                  <div role="button" tabIndex={0} onClick={() => toggleSort('clicks')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('clicks') }} className={`cursor-pointer select-none ${sortBy.key === 'clicks' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Clicks">
+                    <div className="leading-tight">Clicks <SortIndicator keyName="clicks" /></div>
+                  </div>
+                </th>
 
-              <th className="w-40 text-left">
-                <div role="button" tabIndex={0} onClick={() => toggleSort('last_clicked')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('last_clicked') }} className={`cursor-pointer select-none ${sortBy.key === 'last_clicked' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Last clicked">
-                  <div className="leading-tight">Last clicked <SortIndicator keyName="last_clicked" /></div>
-                </div>
-              </th>
+                <th className="w-40 text-left">
+                  <div role="button" tabIndex={0} onClick={() => toggleSort('last_clicked')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('last_clicked') }} className={`cursor-pointer select-none ${sortBy.key === 'last_clicked' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Last clicked">
+                    <div className="leading-tight">Last clicked <SortIndicator keyName="last_clicked" /></div>
+                  </div>
+                </th>
 
-              <th className="w-28 text-left">
-                <div className="leading-tight text-gray-700">Actions</div>
-              </th>
-            </tr>
-          </thead>
+                <th className="w-28 text-left">
+                  <div className="leading-tight text-gray-700">Actions</div>
+                </th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {sortedLinks.map(l => {
-              const shortUrl = `${process.env.NEXT_PUBLIC_API_BASE}/${l.code}`
+            <tbody className="table-body-scroll">
+              {sortedLinks.map(l => {
+                const shortUrl = `${process.env.NEXT_PUBLIC_API_BASE}/${l.code}`
 
-              return (
-                <tr key={l.code} className="align-top">
-                  <td className="py-3">
-                    <div className="truncate max-w-[90px]" title={l.code}>
-                      <Link href={`/code/${l.code}`} className="text-indigo-600 font-semibold">
-                        {l.code}
-                      </Link>
-                    </div>
-                  </td>
+                return (
+                  <tr key={l.code} className="align-top">
+                    <td className="py-3">
+                      <div className="truncate truncate-max-90" title={l.code}>
+                        <Link href={`/code/${l.code}`} className="text-indigo-600 font-semibold">
+                          {l.code}
+                        </Link>
+                      </div>
+                    </td>
 
-                  <td className="py-3">
-                    <div className="truncate max-w-[180px]" title={shortUrl}>
-                      <a href={shortUrl} target="_blank" rel="noreferrer" className="inline-link">
-                        {shortUrl}
-                      </a>
-                    </div>
-                  </td>
+                    <td className="py-3">
+                      <div className="truncate truncate-max-180" title={shortUrl}>
+                        <a href={shortUrl} target="_blank" rel="noreferrer" className="inline-link">
+                          {shortUrl}
+                        </a>
+                      </div>
+                    </td>
 
-                  <td className="py-3">
-                    <div className="truncate max-w-[260px]" title={l.url}>
-                      <a className="inline-link" href={l.url} target="_blank" rel="noreferrer">
-                        {l.url}
-                      </a>
-                    </div>
-                  </td>
+                    <td className="py-3">
+                      <div className="truncate truncate-max-260" title={l.url}>
+                        <a className="inline-link" href={l.url} target="_blank" rel="noreferrer">
+                          {l.url}
+                        </a>
+                      </div>
+                    </td>
 
-                  <td className="py-3 text-center w-28">
-                    <div className="mx-auto" title={`${l.clicks ?? 0}`}>
-                      <span className="badge text-xs" style={{ padding: '0.125rem 0.45rem', lineHeight: 1 }}>
-                        {l.clicks ?? 0}
-                      </span>
-                    </div>
-                  </td>
+                    <td className="py-3 text-center w-28">
+                      <div className="mx-auto" title={`${l.clicks ?? 0}`}>
+                        <span className="badge text-xs" style={{ padding: '0.125rem 0.45rem', lineHeight: 1 }}>
+                          {l.clicks ?? 0}
+                        </span>
+                      </div>
+                    </td>
 
-                  <td className="py-3">
-                    <div className="truncate max-w-[150px]" title={shortDate(l.last_clicked)}>
-                      {shortDate(l.last_clicked)}
-                    </div>
-                  </td>
+                    <td className="py-3">
+                      <div className="truncate truncate-max-150" title={shortDate(l.last_clicked)}>
+                        {shortDate(l.last_clicked)}
+                      </div>
+                    </td>
 
-                  <td className="py-3 w-28">
-                    <div className="flex flex-col gap-2 items-start overflow-hidden">
-                      <button onClick={() => copyToClipboard(shortUrl)} className="btn text-sm w-full">
-                        Copy
-                      </button>
+                    <td className="py-3 w-28">
+                      <div className="flex flex-col gap-2 items-start overflow-hidden">
+                        <button onClick={() => copyToClipboard(shortUrl)} className="btn text-sm w-full">
+                          Copy
+                        </button>
 
-                      <button
-                        onClick={() => requestDelete ? requestDelete(l.code) : onDelete(l.code)}
-                        className="btn btn-danger text-sm w-full"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+                        <button
+                          onClick={() => requestDelete ? requestDelete(l.code) : onDelete(l.code)}
+                          className="btn btn-danger text-sm w-full"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="block md:hidden space-y-2">

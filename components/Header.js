@@ -28,14 +28,10 @@ export default function Header() {
           >
             <span className="text-white font-bold">TL</span>
           </div>
-
-          {}
           <Link href="/" className="h1 inline-block" style={{ whiteSpace: 'nowrap' }}>
             TinyLink
           </Link>
         </div>
-
-        {}
         <nav className="hidden md:flex items-center gap-4">
           <Link href="/" className="inline-link">Dashboard</Link>
           <Link href="/healthz" className="inline-link">Health</Link>
@@ -58,8 +54,6 @@ export default function Header() {
             Backend
           </a>
         </nav>
-
-        {}
         <div className="md:hidden flex items-center">
           <button
             aria-label={open ? 'Close menu' : 'Open menu'}
@@ -79,7 +73,7 @@ export default function Header() {
         </div>
       </div>
 
-      {}
+      
       <div
         className={`md:hidden ${open ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-2 pointer-events-none'}`}
         style={{

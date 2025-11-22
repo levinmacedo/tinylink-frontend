@@ -14,25 +14,48 @@ export default function Dashboard() {
 
   const [confirm, setConfirm] = useState({ open: false, code: null })
 
-  async function fetchLinks() {
-    setLoading(true)
-    setErr(null)
-    try {
-      const data = await listLinks()
-      setLinks(data)
-    } catch (e) {
-      setErr('Failed to load links')
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    let mounted = true
+
+    async function fetchLinksSafe() {
+      if (!mounted) return
+      setLoading(true)
+      setErr(null)
+      try {
+        const data = await listLinks()
+        if (!mounted) return
+        setLinks(data)
+      } catch (e) {
+        if (!mounted) return
+        setErr('Failed to load links')
+      } finally {
+        if (mounted) setLoading(false)
+      }
     }
-  }
+
+    fetchLinksSafe()
+
+    function onFocus() {
+      fetchLinksSafe()
+    }
+
+    window.addEventListener('focus', onFocus)
+    return () => {
+      mounted = false
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [])
+
 
   useEffect(() => {
-    fetchLinks()
-    function onFocus() { fetchLinks() }
-    window.addEventListener('focus', onFocus)
-    return () => window.removeEventListener('focus', onFocus)
-  }, [])
+    function onKey(e) {
+      if (e.key === 'Escape' && confirm.open) {
+        setConfirm({ open: false, code: null })
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [confirm.open])
 
   function notify(message, opts = {}) {
     setToast({
@@ -69,9 +92,10 @@ export default function Dashboard() {
 
   const filtered = links.filter(l => {
     if (!query) return true
+    const q = query.toLowerCase()
     return (
-      l.code.toLowerCase().includes(query.toLowerCase()) ||
-      l.url.toLowerCase().includes(query.toLowerCase())
+      l.code.toLowerCase().includes(q) ||
+      l.url.toLowerCase().includes(q)
     )
   })
 
@@ -93,7 +117,12 @@ export default function Dashboard() {
                 <div className="h2">Search / Filter</div>
                 <div className="text-sm text-gray-500">Showing {filtered.length} of {links.length}</div>
               </div>
-              <input className="input" placeholder="Search by code or URL" value={query} onChange={(e)=>setQuery(e.target.value)} />
+              <input
+                className="input"
+                placeholder="Search by code or URL"
+                value={query}
+                onChange={(e)=>setQuery(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -101,24 +130,41 @@ export default function Dashboard() {
         <section className="mb-12">
           {loading && <div className="card text-gray-600">Loading…</div>}
           {err && <div className="card text-red-500">{err}</div>}
-          {!loading && !err && <LinksTable links={filtered} onDelete={handleDeleteConfirmed} onNotify={notify} requestDelete={requestDelete} />}
+          {!loading && !err && (
+            <LinksTable
+              links={filtered}
+              onDelete={handleDeleteConfirmed}
+              onNotify={notify}
+              requestDelete={requestDelete}
+            />
+          )}
         </section>
       </main>
 
-      {}
       <Toast
         msg={toast?.msg}
         onClose={() => setToast(null)}
         duration={toast?.duration}
       />
 
-      {}
       {confirm.open && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center" aria-modal="true">
-          <div className="absolute inset-0 bg-black/40" onClick={cancelDelete} />
-          <div className="bg-white p-6 rounded shadow-lg z-50" style={{ width: 420, borderRadius: 8 }}>
-            <div className="h2 mb-2">Delete link</div>
-            <div className="text-sm text-gray-700 mb-4">Delete code <strong>{confirm.code}</strong>? This cannot be undone.</div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" aria-modal="true" role="dialog">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={cancelDelete}
+            aria-hidden="true"
+            style={{ zIndex: 50000 }}
+          />
+          <div
+            className="bg-white p-6 rounded shadow-lg"
+            style={{ width: 420, borderRadius: 8, zIndex: 100001 }}
+            role="document"
+            aria-labelledby="confirm-title"
+          >
+            <div id="confirm-title" className="h2 mb-2">Delete link</div>
+            <div className="text-sm text-gray-700 mb-4">
+              Delete code <strong>{confirm.code}</strong>? This cannot be undone.
+            </div>
 
             <div className="flex items-center gap-3 justify-end">
               <button onClick={cancelDelete} className="btn btn-ghost">Cancel</button>

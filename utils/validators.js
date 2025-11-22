@@ -4,8 +4,11 @@ export function isValidCode(code) {
 }
 
 export function isValidUrl(value) {
+  if (!value) return false
+
   try {
-    const url = new URL(value)
+    const trimmed = value.trim()
+    const url = new URL(trimmed)
     return url.protocol === 'http:' || url.protocol === 'https:'
   } catch {
     return false

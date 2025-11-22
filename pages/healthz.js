@@ -6,10 +6,20 @@ export default function HealthZ() {
   const [err, setErr] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     axios
       .get(`${process.env.NEXT_PUBLIC_API_BASE}/health`)
-      .then((res) => setData(res.data))
-      .catch(() => setErr("Backend unreachable"));
+      .then((res) => {
+        if (isMounted) setData(res.data);
+      })
+      .catch(() => {
+        if (isMounted) setErr("Backend unreachable");
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (

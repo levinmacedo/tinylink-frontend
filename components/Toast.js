@@ -50,7 +50,6 @@ export default function Toast({ msg, onClose, duration = 4500 }) {
 
   return (
     <>
-      {}
       <div style={containerStyle} role="status" aria-live="polite">
         <div style={boxStyle}>
           <div style={{ flex: 1, fontSize: 14, lineHeight: '1.25', wordBreak: 'break-word' }}>
@@ -62,8 +61,6 @@ export default function Toast({ msg, onClose, duration = 4500 }) {
           </button>
         </div>
       </div>
-
-      {}
       <style jsx>{`
         @media (min-width: 768px) {
           div[role="status"] {
