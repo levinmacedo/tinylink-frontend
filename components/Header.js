@@ -13,6 +13,8 @@ export default function Header() {
 
         <nav className="flex items-center gap-3">
           <Link href="/" className="inline-link">Dashboard</Link>
+          <Link href="/health" className="inline-link">Health</Link>
+
           <a
             href="https://github.com/levinmacedo/tinylink-backend"
             className="btn btn-ghost ml-2"
