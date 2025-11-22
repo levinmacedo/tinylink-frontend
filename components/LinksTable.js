@@ -1,22 +1,12 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import Toast from './Toast'
 
 function shortDate(ts) {
   if (!ts) return '—'
-  try {
-    return new Date(ts).toLocaleString()
-  } catch {
-    return ts
-  }
+  try { return new Date(ts).toLocaleString() } catch { return ts }
 }
-
-function cmpString(a = '', b = '') {
-  return a.toString().localeCompare(b.toString(), undefined, { sensitivity: 'base' })
-}
-function cmpNumber(a = 0, b = 0) {
-  return Number(a) - Number(b)
-}
+function cmpString(a = '', b = '') { return a.toString().localeCompare(b.toString(), undefined, { sensitivity: 'base' }) }
+function cmpNumber(a = 0, b = 0) { return Number(a) - Number(b) }
 function cmpDate(a, b) {
   if (!a && !b) return 0
   if (!a) return -1
@@ -24,8 +14,7 @@ function cmpDate(a, b) {
   return new Date(a).getTime() - new Date(b).getTime()
 }
 
-export default function LinksTable({ links = [], onDelete }) {
-  const [copyMsg, setCopyMsg] = useState(null)
+export default function LinksTable({ links = [], onDelete, onNotify, requestDelete }) {
   const [sortBy, setSortBy] = useState({ key: 'clicks', dir: 'desc' })
   const [openSet, setOpenSet] = useState(new Set())
 
@@ -41,11 +30,9 @@ export default function LinksTable({ links = [], onDelete }) {
   async function copyToClipboard(text) {
     try {
       await navigator.clipboard.writeText(text)
-      setCopyMsg('Copied!')
-      setTimeout(() => setCopyMsg(null), 1200)
+      if (onNotify) onNotify('Success: “Short URL copied', { duration: 1200 })
     } catch {
-      setCopyMsg('Copy failed')
-      setTimeout(() => setCopyMsg(null), 1200)
+      if (onNotify) onNotify('Error: “Copy failed. Try again', { duration: 1200 })
     }
   }
 
@@ -84,7 +71,7 @@ export default function LinksTable({ links = [], onDelete }) {
 
   if (!links.length) {
     return (
-      <div className="card text-center text-gray-600">No links yet — create one to get started.</div>
+      <div className="card text-center text-gray-600">No No links found - create one to get started.</div>
     )
   }
 
@@ -95,66 +82,31 @@ export default function LinksTable({ links = [], onDelete }) {
           <thead>
             <tr>
               <th className="w-28 text-left">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => toggleSort('code')}
-                  onKeyDown={e => { if (e.key === 'Enter') toggleSort('code') }}
-                  className={`cursor-pointer select-none ${sortBy.key === 'code' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`}
-                  title="Sort by Code"
-                >
+                <div role="button" tabIndex={0} onClick={() => toggleSort('code')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('code') }} className={`cursor-pointer select-none ${sortBy.key === 'code' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Code">
                   <div className="leading-tight">Code <SortIndicator keyName="code" /></div>
                 </div>
               </th>
 
               <th className="w-56 text-left">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => toggleSort('shortUrl')}
-                  onKeyDown={e => { if (e.key === 'Enter') toggleSort('shortUrl') }}
-                  className={`cursor-pointer select-none ${sortBy.key === 'shortUrl' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`}
-                  title="Sort by Short URL"
-                >
+                <div role="button" tabIndex={0} onClick={() => toggleSort('shortUrl')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('shortUrl') }} className={`cursor-pointer select-none ${sortBy.key === 'shortUrl' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Short URL">
                   <div className="leading-tight">Short URL <SortIndicator keyName="shortUrl" /></div>
                 </div>
               </th>
 
               <th className="w-auto text-left">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => toggleSort('url')}
-                  onKeyDown={e => { if (e.key === 'Enter') toggleSort('url') }}
-                  className={`cursor-pointer select-none ${sortBy.key === 'url' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`}
-                  title="Sort by Target URL"
-                >
+                <div role="button" tabIndex={0} onClick={() => toggleSort('url')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('url') }} className={`cursor-pointer select-none ${sortBy.key === 'url' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Target URL">
                   <div className="leading-tight">Target URL <SortIndicator keyName="url" /></div>
                 </div>
               </th>
 
               <th className="w-28 text-center">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => toggleSort('clicks')}
-                  onKeyDown={e => { if (e.key === 'Enter') toggleSort('clicks') }}
-                  className={`cursor-pointer select-none ${sortBy.key === 'clicks' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`}
-                  title="Sort by Clicks"
-                >
+                <div role="button" tabIndex={0} onClick={() => toggleSort('clicks')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('clicks') }} className={`cursor-pointer select-none ${sortBy.key === 'clicks' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Clicks">
                   <div className="leading-tight">Clicks <SortIndicator keyName="clicks" /></div>
                 </div>
               </th>
 
               <th className="w-40 text-left">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => toggleSort('last_clicked')}
-                  onKeyDown={e => { if (e.key === 'Enter') toggleSort('last_clicked') }}
-                  className={`cursor-pointer select-none ${sortBy.key === 'last_clicked' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`}
-                  title="Sort by Last clicked"
-                >
+                <div role="button" tabIndex={0} onClick={() => toggleSort('last_clicked')} onKeyDown={e => { if (e.key === 'Enter') toggleSort('last_clicked') }} className={`cursor-pointer select-none ${sortBy.key === 'last_clicked' ? 'text-indigo-700 font-semibold' : 'text-gray-700'}`} title="Sort by Last clicked">
                   <div className="leading-tight">Last clicked <SortIndicator keyName="last_clicked" /></div>
                 </div>
               </th>
@@ -216,9 +168,7 @@ export default function LinksTable({ links = [], onDelete }) {
                       </button>
 
                       <button
-                        onClick={() => {
-                          if (confirm(`Delete code ${l.code}? This cannot be undone.`)) onDelete(l.code)
-                        }}
+                        onClick={() => requestDelete ? requestDelete(l.code) : onDelete(l.code)}
                         className="btn btn-danger text-sm w-full"
                       >
                         Delete
@@ -290,9 +240,7 @@ export default function LinksTable({ links = [], onDelete }) {
 
                 <div className="mt-3 flex items-center gap-2">
                   <button
-                    onClick={() => {
-                      if (confirm(`Delete code ${l.code}? This cannot be undone.`)) onDelete(l.code)
-                    }}
+                    onClick={() => requestDelete ? requestDelete(l.code) : onDelete(l.code)}
                     className="btn btn-danger text-sm"
                   >
                     Delete
@@ -303,8 +251,6 @@ export default function LinksTable({ links = [], onDelete }) {
           )
         })}
       </div>
-
-      <Toast msg={copyMsg} onClose={() => setCopyMsg(null)} />
     </div>
   )
 }

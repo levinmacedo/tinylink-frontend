@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react'
 import LinkForm from '../components/LinkForm'
 import LinksTable from '../components/LinksTable'
+import Toast from '../components/Toast'
 import { listLinks, createLink, deleteLink } from '../lib/api'
-import Toast from '../components/Toast';
 
 export default function Dashboard() {
   const [links, setLinks] = useState([])
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState(null)
   const [query, setQuery] = useState('')
-  const [toastMsg, setToastMsg] = useState(null);
+
+  const [toast, setToast] = useState(null)
+
+  const [confirm, setConfirm] = useState({ open: false, code: null })
 
   async function fetchLinks() {
     setLoading(true)
@@ -24,16 +27,19 @@ export default function Dashboard() {
     }
   }
 
- useEffect(() => {
+  useEffect(() => {
     fetchLinks()
-
-    function onFocus() {
-      fetchLinks()
-    }
-
+    function onFocus() { fetchLinks() }
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
   }, [])
+
+  function notify(message, opts = {}) {
+    setToast({
+      msg: message,
+      duration: typeof opts.duration === 'undefined' ? 4500 : opts.duration
+    })
+  }
 
   async function handleCreate(payload) {
     const created = await createLink(payload)
@@ -41,16 +47,24 @@ export default function Dashboard() {
     return created
   }
 
-  async function handleDelete(code) {
+  async function handleDeleteConfirmed(code) {
     try {
-      await deleteLink(code);
-      setLinks(prev => prev.filter(l => l.code !== code));
-      setToastMsg(`Deleted ${code}`);
-      setTimeout(() => setToastMsg(null), 2000);
+      await deleteLink(code)
+      setLinks(prev => prev.filter(l => l.code !== code))
+      notify(`Deleted ${code} successfully`, { duration: 4500 })
     } catch (e) {
-      setToastMsg('Delete failed');
-      setTimeout(() => setToastMsg(null), 2000);
+      notify('Delete failed. Please try again', { duration: 4500 })
+    } finally {
+      setConfirm({ open: false, code: null })
     }
+  }
+
+  function requestDelete(code) {
+    setConfirm({ open: true, code })
+  }
+
+  function cancelDelete() {
+    setConfirm({ open: false, code: null })
   }
 
   const filtered = links.filter(l => {
@@ -70,23 +84,16 @@ export default function Dashboard() {
 
         <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mb-6">
           <div className="md:col-span-1">
-            <LinkForm onCreate={handleCreate} />
+            <LinkForm onCreate={handleCreate} onNotify={notify} />
           </div>
 
           <div className="md:col-span-2">
             <div className="card mb-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="h2">Search / Filter</div>
-                <div className="text-sm text-gray-500">
-                  Showing {filtered.length} of {links.length}
-                </div>
+                <div className="text-sm text-gray-500">Showing {filtered.length} of {links.length}</div>
               </div>
-              <input
-                className="input"
-                placeholder="Search by code or URL"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-              />
+              <input className="input" placeholder="Search by code or URL" value={query} onChange={(e)=>setQuery(e.target.value)} />
             </div>
           </div>
         </div>
@@ -94,12 +101,32 @@ export default function Dashboard() {
         <section className="mb-12">
           {loading && <div className="card text-gray-600">Loading…</div>}
           {err && <div className="card text-red-500">{err}</div>}
-          {!loading && !err && (
-            <LinksTable links={filtered} onDelete={handleDelete} />
-          )}
+          {!loading && !err && <LinksTable links={filtered} onDelete={handleDeleteConfirmed} onNotify={notify} requestDelete={requestDelete} />}
         </section>
       </main>
-      <Toast msg={toastMsg} onClose={() => setToastMsg(null)} />
+
+      {}
+      <Toast
+        msg={toast?.msg}
+        onClose={() => setToast(null)}
+        duration={toast?.duration}
+      />
+
+      {}
+      {confirm.open && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center" aria-modal="true">
+          <div className="absolute inset-0 bg-black/40" onClick={cancelDelete} />
+          <div className="bg-white p-6 rounded shadow-lg z-50" style={{ width: 420, borderRadius: 8 }}>
+            <div className="h2 mb-2">Delete link</div>
+            <div className="text-sm text-gray-700 mb-4">Delete code <strong>{confirm.code}</strong>? This cannot be undone.</div>
+
+            <div className="flex items-center gap-3 justify-end">
+              <button onClick={cancelDelete} className="btn btn-ghost">Cancel</button>
+              <button onClick={() => handleDeleteConfirmed(confirm.code)} className="btn btn-danger">Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
