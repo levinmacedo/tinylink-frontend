@@ -98,7 +98,7 @@ export default function Header() {
       >
         <div className="container flex flex-col gap-3 py-4">
           <Link href="/" className="inline-link block" onClick={() => setOpen(false)}>Dashboard</Link>
-          <Link href="/healthz" className="inline-link block" onClick={() => setOpen(false)}>Healthz</Link>
+          <Link href="/healthz" className="inline-link block" onClick={() => setOpen(false)}>Healthcheck</Link>
 
           <div className="flex flex-col sm:flex-row gap-2 mt-2">
             <a
