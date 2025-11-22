@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import LinkForm from '../components/LinkForm'
 import LinksTable from '../components/LinksTable'
 import { listLinks, createLink, deleteLink } from '../lib/api'
+import Toast from '../components/Toast';
 
 export default function Dashboard() {
   const [links, setLinks] = useState([])
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState(null)
   const [query, setQuery] = useState('')
+  const [toastMsg, setToastMsg] = useState(null);
 
   async function fetchLinks() {
     setLoading(true)
@@ -22,8 +24,15 @@ export default function Dashboard() {
     }
   }
 
-  useEffect(() => {
+ useEffect(() => {
     fetchLinks()
+
+    function onFocus() {
+      fetchLinks()
+    }
+
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
   }, [])
 
   async function handleCreate(payload) {
@@ -34,10 +43,11 @@ export default function Dashboard() {
 
   async function handleDelete(code) {
     try {
-      await deleteLink(code)
-      setLinks(prev => prev.filter(l => l.code !== code))
+      await deleteLink(code);
+      setLinks(prev => prev.filter(l => l.code !== code));
+      setToastMsg(`Deleted ${code}`);
     } catch (e) {
-      alert('Delete failed')
+      setToastMsg('Delete failed');
     }
   }
 
@@ -87,6 +97,7 @@ export default function Dashboard() {
           )}
         </section>
       </main>
+      <Toast msg={toastMsg} onClose={() => setToastMsg(null)} />
     </div>
   )
 }
