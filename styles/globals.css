@@ -141,16 +141,33 @@ body {
   color: var(--accent);
 }
 
-a.inline-link {
+.inline-link {
   color: var(--accent);
   text-decoration: none;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition:
+    color .15s ease,
+    background-color .15s ease,
+    box-shadow .15s ease;
 }
 
-a.inline-link:hover {
-  text-decoration: underline;
+.inline-link:hover {
+  color: var(--accent-2);
 }
 
 @media (max-width: 640px) {
   .card { padding: .75rem; border-radius: 10px; }
   .h1 { font-size: 1.25rem; }
+}
+
+@media (max-width: 767px) {
+  header + div, header > .container + .md\:hidden {
+    will-change: max-height, opacity;
+  }
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
 }

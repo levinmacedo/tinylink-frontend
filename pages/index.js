@@ -62,7 +62,7 @@ export default function Dashboard() {
   return (
     <div>
       <main className="container">
-        <div className="mb-6">
+        <div className="mt-4 mb-6">
           <div className="h1">Dashboard</div>
         </div>
 
