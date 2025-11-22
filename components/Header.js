@@ -30,7 +30,7 @@ export default function Header() {
 
         <nav className="hidden md:flex items-center gap-4">
           <Link href="/" className="inline-link">Dashboard</Link>
-          <Link href="/health" className="inline-link">Health</Link>
+          <Link href="/healthz" className="inline-link">Health</Link>
 
           <a
             href="https://github.com/levinmacedo/tinylink-frontend"
