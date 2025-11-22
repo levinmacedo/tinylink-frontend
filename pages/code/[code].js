@@ -27,12 +27,12 @@ export default function CodePage() {
   return (
     <div>
       <main className="container">
-        <button className="btn btn-ghost mb-4" onClick={() => router.push('/')}>
+        <button className="btn btn-ghost mt-4 mb-4" onClick={() => router.push('/')}>
           ← Back
         </button>
 
         <div className="card">
-          <div className="h1 mb-2">Statistics — {code}</div>
+          <div className="h1 mb-2">Statistics - {code}</div>
 
           {loading && <div className="text-gray-600">Loading…</div>}
           {err && <div className="text-red-500">{err}</div>}

@@ -71,7 +71,7 @@ export default function LinksTable({ links = [], onDelete, onNotify, requestDele
 
   if (!links.length) {
     return (
-      <div className="card text-center text-gray-600">No No links found - create one to get started.</div>
+      <div className="card text-center text-gray-600">No links found - create one to get started.</div>
     )
   }
 

@@ -11,43 +11,69 @@ export default function Toast({ msg, onClose, duration = 4500 }) {
 
   if (!msg) return null
 
-  return (
-    <div
-      className="fixed bottom-6 right-6 z-50"
-      style={{ minWidth: 300, maxWidth: 520 }}
-      role="status"
-      aria-live="polite"
-    >
-      <div
-        className="bg-indigo-600 text-white px-4 py-2 shadow"
-        style={{
-          borderRadius: 6,
-          boxShadow: '0 8px 20px rgba(2,6,23,0.12)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
-        <div className="text-sm leading-snug break-words" style={{ flex: 1 }}>
-          {msg}
-        </div>
+  const containerStyle = {
+    position: 'fixed',
+    bottom: 18,
+ 
+    left: '50%',
+    transform: 'translateX(-50%)',
+    zIndex: 99999,            
+    maxWidth: 'calc(100% - 32px)',
+    width: 'auto',
+    paddingLeft: 8,
+    paddingRight: 8,
+  }
 
-        <button
-          onClick={onClose}
-          aria-label="Close notification"
-          className="text-white hover:opacity-90"
-          style={{
-            background: 'transparent',
-            border: 'none',
-            padding: 6,
-            lineHeight: 1,
-            marginLeft: 0,
-            cursor: 'pointer',
-          }}
-        >
-          ✕
-        </button>
+  const boxStyle = {
+    background: '#4f46e5',
+    color: '#fff',
+    padding: '10px 12px',
+    borderRadius: 6,
+    boxShadow: '0 10px 30px rgba(2,6,23,0.12)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    minWidth: 160,
+    maxWidth: 520,
+  }
+
+  const closeStyle = {
+    background: 'transparent',
+    border: 'none',
+    color: '#fff',
+    padding: 6,
+    cursor: 'pointer',
+    lineHeight: 1,
+    marginLeft: 0,
+    fontSize: 14,
+  }
+
+  return (
+    <>
+      {}
+      <div style={containerStyle} role="status" aria-live="polite">
+        <div style={boxStyle}>
+          <div style={{ flex: 1, fontSize: 14, lineHeight: '1.25', wordBreak: 'break-word' }}>
+            {msg}
+          </div>
+
+          <button onClick={onClose} aria-label="Close notification" style={closeStyle}>
+            ✕
+          </button>
+        </div>
       </div>
-    </div>
+
+      {}
+      <style jsx>{`
+        @media (min-width: 768px) {
+          div[role="status"] {
+            left: auto !important;
+            right: 18px !important;
+            transform: none !important;
+            max-width: 420px !important;
+          }
+        }
+      `}</style>
+    </>
   )
 }
