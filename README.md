@@ -88,9 +88,8 @@ Recommended: Vercel
 	2.	Import repo in Vercel
 	3.	Add environment variable:
 
-NEXT_PUBLIC_API_BASE=https://your-backend-url.com
-
-	4.	Deploy
-
+NEXT_PUBLIC_API_BASE=https://your-backend-url.com -> 4. deploy
+		
+	
 
 
