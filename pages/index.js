@@ -110,7 +110,7 @@ export default function Dashboard() {
         <div className="card text-center py-8 mt-10 flex flex-col items-center gap-3">
           <div className="inline-block w-6 h-6 rounded-full animate-spin border-2 border-t-transparent border-indigo-600" />
           <div className="text-indigo-700 font-semibold text-sm">Connecting to server…</div>
-          <div className="text-xs text-gray-500">Backend waking up (Render cold start)</div>
+          <div className="text-xs text-gray-500">Backend waking up</div>
         </div>
       </div>
     )
