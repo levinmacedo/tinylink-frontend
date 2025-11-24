@@ -11,11 +11,13 @@ export default function Dashboard() {
   const [query, setQuery] = useState('')
 
   const [toast, setToast] = useState(null)
-
   const [confirm, setConfirm] = useState({ open: false, code: null })
+
+  const [connecting, setConnecting] = useState(true)
 
   useEffect(() => {
     let mounted = true
+    let retryTimer = null
 
     async function fetchLinksSafe() {
       if (!mounted) return
@@ -25,9 +27,12 @@ export default function Dashboard() {
         const data = await listLinks()
         if (!mounted) return
         setLinks(data)
+        setConnecting(false)
       } catch (e) {
         if (!mounted) return
         setErr('Failed to load links')
+        setConnecting(true)
+        retryTimer = setTimeout(fetchLinksSafe, 2000)
       } finally {
         if (mounted) setLoading(false)
       }
@@ -42,10 +47,10 @@ export default function Dashboard() {
     window.addEventListener('focus', onFocus)
     return () => {
       mounted = false
+      if (retryTimer) clearTimeout(retryTimer)
       window.removeEventListener('focus', onFocus)
     }
   }, [])
-
 
   useEffect(() => {
     function onKey(e) {
@@ -99,6 +104,18 @@ export default function Dashboard() {
     )
   })
 
+  if (connecting) {
+    return (
+      <div className="container">
+        <div className="card text-center py-8 mt-10 flex flex-col items-center gap-3">
+          <div className="inline-block w-6 h-6 rounded-full animate-spin border-2 border-t-transparent border-indigo-600" />
+          <div className="text-indigo-700 font-semibold text-sm">Connecting to server…</div>
+          <div className="text-xs text-gray-500">Backend waking up (Render cold start)</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <main className="container">
@@ -121,7 +138,7 @@ export default function Dashboard() {
                 className="input"
                 placeholder="Search by code or URL"
                 value={query}
-                onChange={(e)=>setQuery(e.target.value)}
+                onChange={e => setQuery(e.target.value)}
               />
             </div>
           </div>
